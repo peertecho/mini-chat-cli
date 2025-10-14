@@ -12,6 +12,7 @@
         ".gitignore",
         "coverage",
         "storage",
+        "tmp",
         "README.md"
       ]
     }
