@@ -21,7 +21,8 @@ async function main (args) {
 
   console.log('\nInvite:', await room.createInvite())
 
-  const user = await saveUserInfo(room)
+  const user = await addWriterInfo(room)
+  await printAllWriters(room)
 
   await prompt(async (data) => {
     const msg = data.trim()
@@ -37,21 +38,24 @@ async function main (args) {
 }
 
 /** @type {function(MiniChatRoom)} */
-async function saveUserInfo (room) {
+async function addWriterInfo (room) {
   const userInfo = os.userInfo()
   const userId = `${os.hostname()} ~ ${process.cwd()} ~ ${room.storage}`
   const userData = { ...userInfo, pid: process.pid, at: new Date().toISOString() }
   await room.addUser(userId, userData)
+  return { ...userData, userId }
+}
 
+/** @type {function(MiniChatRoom)} */
+async function printAllWriters (room) {
   const users = await room.getUsers()
-  console.log('Users:')
+  console.log('All writers:')
   users
     .sort((a, b) => new Date(b.at) - new Date(a.at))
     .slice(0, 5)
     .forEach((user) => {
       console.log(`- ${JSON.stringify(user)}`)
     })
-  return { ...userData, userId }
 }
 
 module.exports = main
